@@ -5,11 +5,14 @@ import (
 )
 
 func main() {
-    grid := NewGrid(4, 6)
+    btGrid := NewGrid(4, 6)
+    swGrid := NewGrid(4, 6)
 
     bt := NewBinaryTree()
-    bt.on(grid)
+    bt.on(btGrid)
+    fmt.Println(btGrid.ToString())
 
-    maze := grid.ToString()
-    fmt.Println(maze)
+    sw := NewSiderwinder()
+    sw.on(swGrid)
+    fmt.Println(swGrid.ToString())
 }
