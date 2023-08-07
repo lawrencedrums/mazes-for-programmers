@@ -6,9 +6,10 @@ import (
 
 func main() {
     grid := NewGrid(4, 6)
-    bt := NewBinaryTree()
 
+    bt := NewBinaryTree()
     bt.on(grid)
 
-    fmt.Println("reached the end of main()")
+    maze := grid.ToString()
+    fmt.Println(maze)
 }

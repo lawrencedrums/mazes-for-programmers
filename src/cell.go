@@ -27,7 +27,6 @@ func (c *Cell) Unlink(cell *Cell, bidi bool) {
 }
 
 func (c *Cell) Links() (keys []*Cell) {
-    keys = make([]*Cell, 0, len(c.links))
     for k := range c.links {
         keys = append(keys, k)
     }
@@ -35,8 +34,7 @@ func (c *Cell) Links() (keys []*Cell) {
 }
 
 func (c *Cell) Linked(targetCell *Cell) bool {
-    for i, cell := range c.Links() {
-        _ = i
+    for _, cell := range c.Links() {
         if cell == targetCell {
             return true
         }
@@ -44,19 +42,18 @@ func (c *Cell) Linked(targetCell *Cell) bool {
     return false
 }
 
-func (c *Cell) Neighbors() []*Cell {
-    neighbors := []*Cell{}
-    if c.North != (&Cell{}) {
+func (c *Cell) Neighbors() (neighbors []*Cell) {
+    if c.North != nil {
         neighbors = append(neighbors, c.North)
     }
-    if c.East != (&Cell{}) {
+    if c.East != nil {
         neighbors = append(neighbors, c.East)
     }
-    if c.South != (&Cell{}) {
+    if c.South != nil {
         neighbors = append(neighbors, c.South)
     }
-    if c.West != (&Cell{}) {
+    if c.West != nil {
         neighbors = append(neighbors, c.West)
     }
-    return neighbors
+    return
 }

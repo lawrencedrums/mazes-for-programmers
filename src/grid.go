@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	"strings"
 )
 
 type Grid struct {
@@ -35,17 +36,52 @@ func (g *Grid) Size() int {
     return g.rows * g.cols
 }
 
+func (g *Grid) ToString() []string {
+    var output []string
+    output = append(output, "+" + strings.Repeat("---+", g.cols) + "\n")
+
+    for row := range g.grid {
+        top := "|"
+        bot := "+"
+
+        for col := range g.grid[0] {
+            cell := g.grid[row][col]
+            if cell == nil {
+                cell = NewCell(-1, -1)
+            }
+
+            body := "   " // three spaces
+            corner := "+"
+
+            eastBoundary := "|"
+            if cell.Linked(cell.East) {
+                eastBoundary = " "
+            }
+            top += body + eastBoundary
+
+            southBoundary := "---"
+            if cell.Linked(cell.South) {
+                southBoundary = "   " // three spaces
+            }
+            bot += southBoundary + corner
+        }
+        output = append(output, top + "\n")
+        output = append(output, bot + "\n")
+    }
+    return output
+}
+
 func prepareGrid(grid *Grid) {
-    for i := 0; i < grid.rows; i++ {
-        for j := 0; j < grid.cols; j++ {
-            grid.grid[i][j] = NewCell(i, j)
+    for row := range grid.grid {
+        for col := range grid.grid[0] {
+            grid.grid[row][col] = NewCell(row, col)
         }
     }
 }
 
 func configureCells(grid *Grid) {
-    for row := 0; row < grid.rows; row++ {
-        for col := 0; col < grid.cols; col++ {
+    for row := range grid.grid {
+        for col := range grid.grid[0] {
             setNeighbors(row, col, grid)
         }
     }
@@ -53,13 +89,13 @@ func configureCells(grid *Grid) {
 
 func setNeighbors(row, col int, grid *Grid) {
     cell := grid.grid[row][col]
-    if row-1 > 0 {
+    if row-1 >= 0 {
         cell.North = grid.grid[row-1][col]
     }
     if row+1 < grid.rows {
         cell.South = grid.grid[row+1][col]
     }
-    if col-1 > 0 {
+    if col-1 >= 0 {
         cell.West = grid.grid[row][col-1]
     }
     if col+1 < grid.cols {

@@ -10,22 +10,21 @@ func NewBinaryTree() (bt *BinaryTree) {
 }
 
 func (bt *BinaryTree) on(grid *Grid) {
-    for i := 0; i < grid.rows; i++ {
-        for j := 0; j <grid.cols; j++ {
-            cell := grid.grid[i][j]
+    for row := range grid.grid {
+        for col := range grid.grid[0] {
+            cell := grid.grid[row][col]
 
-            neighbors := make([]*Cell, 0)
-            if cell.North != (&Cell{}) {
+            var neighbors []*Cell
+            if cell.North != nil {
                 neighbors = append(neighbors, cell.North)
             }
-            if cell.East != (&Cell{}) {
+            if cell.East != nil {
                 neighbors = append(neighbors, cell.East)
             }
 
-            if neighborLen := len(neighbors); neighborLen > 0 {
-                randNeighborIdx := rand.Intn(neighborLen)
-                neighbor := neighbors[randNeighborIdx]
-                cell.Link(neighbor, false)
+            if len := len(neighbors); len > 0 {
+                neighbor := neighbors[rand.Intn(len)]
+                cell.Link(neighbor, true)
             }
         }
     }
