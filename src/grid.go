@@ -1,7 +1,13 @@
 package main
 
 import (
+	"fmt"
+	"image"
+	"image/color"
+	"image/draw"
+	"image/png"
 	"math/rand"
+	"os"
 	"strings"
 )
 
@@ -69,6 +75,107 @@ func (g *Grid) ToString() []string {
         output = append(output, bot + "\n")
     }
     return output
+}
+
+func (g *Grid) ToPng(cellSize int) {
+    f, err := os.Create("maze.png")
+    if err != nil {
+        panic(err)
+    }
+    defer f.Close()
+
+    imgWidth := g.cols * cellSize
+    imgHeight := g.rows * cellSize
+    imgMargin := 20
+
+    background := color.RGBA{255, 255, 255, 255}
+    walls := color.RGBA{0, 0, 0, 255}
+
+    img := image.NewRGBA(
+        image.Rect(
+            -imgMargin,
+            -imgMargin,
+            imgWidth+imgMargin,
+            imgHeight+imgMargin,
+        ),
+    )
+
+    draw.Draw(img, img.Bounds(), &image.Uniform{background}, image.ZP, draw.Src)
+
+    for row := range g.grid {
+        for col := range g.grid[0] {
+            cell := g.grid[row][col]
+
+            x0 := cell.col * cellSize
+            y0 := cell.row * cellSize
+            x1 := (cell.col + 1) * cellSize
+            y1 := (cell.row + 1) * cellSize
+
+            if cell.North == nil {
+                drawLine(img, x0, y0, x1, y0, walls)
+            }
+            if cell.West == nil {
+                drawLine(img, x0, y0, x0, y1, walls)
+            }
+            if !cell.Linked(cell.East) {
+                drawLine(img, x1, y0, x1, y1, walls)
+            }
+            if !cell.Linked(cell.South) {
+                drawLine(img, x0, y1, x1, y1, walls)
+            }
+        }
+    }
+
+    if err = png.Encode(f, img); err != nil {
+        fmt.Printf("Failed to encode: %v", err)
+    }
+}
+
+func drawLine(img draw.Image, x0, y0, x1, y1 int, clr color.Color) {
+    dx := x1 - x0
+    dy := y1 - y0
+    x := x0
+    y := y0
+
+    if dx < 0 {
+        dx = -dx
+        x = x1
+        x1 = x0
+    }
+
+    if dy < 0 {
+        dy = -dy
+        y = y1
+        y1 = y0
+    }
+
+    sx := -1
+    if x < x1 {
+        sx = 1
+    }
+
+    sy := -1
+    if y < y1 {
+        sy = 1
+    }
+
+    err := dx - dy
+
+    for {
+        img.Set(x, y, clr)
+        if x == x1 && y == y1 {
+            break
+        }
+        e2 := 2 * err
+        if e2 > -dy {
+            err -= dy
+            x += sx
+        }
+        if e2 < dx {
+            err += dx
+            y += sy
+        }
+    }
 }
 
 func prepareGrid(grid *Grid) {

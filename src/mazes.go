@@ -15,4 +15,6 @@ func main() {
     sw := NewSiderwinder()
     sw.on(swGrid)
     fmt.Println(swGrid.ToString())
+
+    swGrid.ToPng(80)
 }

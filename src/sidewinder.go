@@ -20,7 +20,7 @@ func (sw *Sidewinder) on(grid *Grid) {
             atEasternBoundary := (cell.East == nil)
             atNorthernBoundary := (cell.North == nil)
             shouldCloseOut := atEasternBoundary ||
-                              (!atNorthernBoundary && rand.Intn(2) == 0)
+                (!atNorthernBoundary && rand.Intn(2) == 0)
 
             if shouldCloseOut {
                 member := run[rand.Intn(len(run))]
