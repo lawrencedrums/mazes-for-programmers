@@ -14,6 +14,7 @@ import (
 type Grid struct {
     rows, cols int
     grid [][]*Cell
+    distances *Distances
 }
 
 func NewGrid(rows, cols int) *Grid {
@@ -26,6 +27,7 @@ func NewGrid(rows, cols int) *Grid {
         rows: rows,
         cols: cols,
         grid: cells,
+        distances: &Distances{},
     }
     prepareGrid(grid)
     configureCells(grid)
@@ -42,6 +44,13 @@ func (g *Grid) Size() int {
     return g.rows * g.cols
 }
 
+func (g *Grid) ContentsOf(cell *Cell) string {
+    if val, ok := g.distances.cells[cell]; ok {
+        return fmt.Sprintf("%x", val)
+    }
+    return " " // single space
+}
+
 func (g *Grid) ToString() []string {
     var output []string
     output = append(output, "+" + strings.Repeat("---+", g.cols) + "\n")
@@ -56,12 +65,12 @@ func (g *Grid) ToString() []string {
                 cell = NewCell(-1, -1)
             }
 
-            body := "   " // three spaces
+            body := fmt.Sprintf(" %s ", g.ContentsOf(cell)) // three spaces
             corner := "+"
 
             eastBoundary := "|"
             if cell.Linked(cell.East) {
-                eastBoundary = " "
+                eastBoundary = " " // single space
             }
             top += body + eastBoundary
 
@@ -112,16 +121,16 @@ func (g *Grid) ToPng(cellSize int) {
             y1 := (cell.row + 1) * cellSize
 
             if cell.North == nil {
-                drawLine(img, x0, y0, x1, y0, walls)
+                drawRect(img, x0, y0, x1, y0, walls)
             }
             if cell.West == nil {
-                drawLine(img, x0, y0, x0, y1, walls)
+                drawRect(img, x0, y0, x0, y1, walls)
             }
             if !cell.Linked(cell.East) {
-                drawLine(img, x1, y0, x1, y1, walls)
+                drawRect(img, x1, y0, x1, y1, walls)
             }
             if !cell.Linked(cell.South) {
-                drawLine(img, x0, y1, x1, y1, walls)
+                drawRect(img, x0, y1, x1, y1, walls)
             }
         }
     }
@@ -131,51 +140,10 @@ func (g *Grid) ToPng(cellSize int) {
     }
 }
 
-func drawLine(img draw.Image, x0, y0, x1, y1 int, clr color.Color) {
-    dx := x1 - x0
-    dy := y1 - y0
-    x := x0
-    y := y0
-
-    if dx < 0 {
-        dx = -dx
-        x = x1
-        x1 = x0
-    }
-
-    if dy < 0 {
-        dy = -dy
-        y = y1
-        y1 = y0
-    }
-
-    sx := -1
-    if x < x1 {
-        sx = 1
-    }
-
-    sy := -1
-    if y < y1 {
-        sy = 1
-    }
-
-    err := dx - dy
-
-    for {
-        img.Set(x, y, clr)
-        if x == x1 && y == y1 {
-            break
-        }
-        e2 := 2 * err
-        if e2 > -dy {
-            err -= dy
-            x += sx
-        }
-        if e2 < dx {
-            err += dx
-            y += sy
-        }
-    }
+func drawRect(img draw.Image, x0, y0, x1, y1 int, clr color.Color) {
+    width := 6
+    rect := image.Rect(x0, y0, x1+width, y1+width)
+    draw.Draw(img, rect, &image.Uniform{clr}, image.ZP, draw.Src)
 }
 
 func prepareGrid(grid *Grid) {
@@ -189,24 +157,19 @@ func prepareGrid(grid *Grid) {
 func configureCells(grid *Grid) {
     for row := range grid.grid {
         for col := range grid.grid[0] {
-            setNeighbors(row, col, grid)
+            cell := grid.grid[row][col]
+            if row-1 >= 0 {
+                cell.North = grid.grid[row-1][col]
+            }
+            if row+1 < grid.rows {
+                cell.South = grid.grid[row+1][col]
+            }
+            if col-1 >= 0 {
+                cell.West = grid.grid[row][col-1]
+            }
+            if col+1 < grid.cols {
+                cell.East = grid.grid[row][col+1]
+            }
         }
     }
 }
-
-func setNeighbors(row, col int, grid *Grid) {
-    cell := grid.grid[row][col]
-    if row-1 >= 0 {
-        cell.North = grid.grid[row-1][col]
-    }
-    if row+1 < grid.rows {
-        cell.South = grid.grid[row+1][col]
-    }
-    if col-1 >= 0 {
-        cell.West = grid.grid[row][col-1]
-    }
-    if col+1 < grid.cols {
-        cell.East = grid.grid[row][col+1]
-    }
-}
-

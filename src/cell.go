@@ -57,3 +57,25 @@ func (c *Cell) Neighbors() (neighbors []*Cell) {
     }
     return
 }
+
+func (c *Cell) Distances() *Distances {
+    dist := NewDistances(c)
+
+    var frontier []*Cell
+    frontier = append(frontier, c)
+
+    for len(frontier) > 0 {
+        var newFrontier []*Cell
+
+        for _, cell := range frontier {
+            for _, linked := range cell.Links() {
+                if _, ok := dist.cells[linked]; !ok {
+                    dist.cells[linked] = dist.cells[cell] + 1
+                    newFrontier = append(newFrontier, linked)
+                }
+            }
+        }
+        frontier = newFrontier
+    }
+    return dist
+}
