@@ -17,12 +17,17 @@ func main() {
     sw.on(swGrid)
 
     start := swGrid.grid[0][0]
+
     distances := start.Distances()
-    swGrid.distances = distances
+    newStart, _ := distances.max()
+
+    newDistances := newStart.Distances()
+    goal, _ := newDistances.max()
+
+    swGrid.distances = newDistances.PathTo(goal)
 
     // swGrid.ToPng(80)
-    fmt.Println(swGrid.ToString())
+    // swGrid.distances = distances.PathTo(swGrid.grid[swGrid.rows-1][0])
 
-    swGrid.distances = distances.PathTo(swGrid.grid[swGrid.rows-1][0])
     fmt.Println(swGrid.ToString())
 }

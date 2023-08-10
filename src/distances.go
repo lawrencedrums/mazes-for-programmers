@@ -42,3 +42,16 @@ func (d *Distances) PathTo(goal *Cell) *Distances {
     }
     return breadcrumbs
 }
+
+func (d *Distances) max() (*Cell, int) {
+    maxDist := 0
+    maxCell := d.root
+
+    for cell, distance := range d.cells {
+        if distance > maxDist {
+            maxDist = distance
+            maxCell = cell
+        }
+    }
+    return maxCell, maxDist
+}
