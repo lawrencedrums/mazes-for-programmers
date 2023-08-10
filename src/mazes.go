@@ -16,11 +16,13 @@ func main() {
     sw := NewSiderwinder()
     sw.on(swGrid)
 
-    fmt.Println(swGrid.ToString())
-
     start := swGrid.grid[0][0]
-    swGrid.distances = start.Distances()
+    distances := start.Distances()
+    swGrid.distances = distances
 
     // swGrid.ToPng(80)
+    fmt.Println(swGrid.ToString())
+
+    swGrid.distances = distances.PathTo(swGrid.grid[swGrid.rows-1][0])
     fmt.Println(swGrid.ToString())
 }

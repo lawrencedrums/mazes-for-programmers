@@ -24,3 +24,21 @@ func (d *Distances) Cells() (keys []*Cell) {
     }
     return
 }
+
+func (d *Distances) PathTo(goal *Cell) *Distances {
+    current := goal
+
+    breadcrumbs := NewDistances(d.root)
+    breadcrumbs.cells[current] = d.cells[current]
+
+    for current != d.root {
+        for _, link := range current.Links() {
+            if d.cells[link] < d.cells[current] {
+                breadcrumbs.cells[link] = d.cells[link]
+                current = link
+                break
+            }
+        }
+    }
+    return breadcrumbs
+}

@@ -46,7 +46,7 @@ func (g *Grid) Size() int {
 
 func (g *Grid) ContentsOf(cell *Cell) string {
     if val, ok := g.distances.cells[cell]; ok {
-        return fmt.Sprintf("%x", val)
+        return fmt.Sprintf("%X", val)
     }
     return " " // single space
 }
@@ -68,7 +68,7 @@ func (g *Grid) ToString() []string {
             body := fmt.Sprintf(" %s ", g.ContentsOf(cell)) // three spaces
             corner := "+"
 
-            eastBoundary := "|"
+            eastBoundary := "│"
             if cell.Linked(cell.East) {
                 eastBoundary = " " // single space
             }
