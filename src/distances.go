@@ -43,7 +43,7 @@ func (d *Distances) PathTo(goal *Cell) *Distances {
     return breadcrumbs
 }
 
-func (d *Distances) max() (*Cell, int) {
+func (d *Distances) Max() (*Cell, int) {
     maxDist := 0
     maxCell := d.root
 

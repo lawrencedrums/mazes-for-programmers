@@ -1,33 +1,32 @@
 package main
 
-import (
-    "fmt"
-)
-
 func main() {
-    // btGrid := NewGrid(4, 6)
-    swGrid := NewGrid(4, 6)
+    btGrid := NewGrid(20, 20)
+    swGrid := NewGrid(20, 20)
 
-    // bt := NewBinaryTree()
-    // bt.on(btGrid)
+    bt := NewBinaryTree()
+    bt.on(btGrid)
 
     // fmt.Println(btGrid.ToString())
+    btGridStart := btGrid.grid[10][10]
+    btGrid.distances = btGridStart.Distances()
+
+    btGrid.ToPng(true, 80, "mazes/btGrid.png")
 
     sw := NewSiderwinder()
     sw.on(swGrid)
 
-    start := swGrid.grid[0][0]
+    swGridStart := swGrid.grid[10][10]
+    swGrid.distances = swGridStart.Distances()
 
-    distances := start.Distances()
-    newStart, _ := distances.max()
+    // find longest path
+    // newStart, _ := distances.Max()
+    // newDistances := newStart.Distances()
+    // goal, _ := newDistances.Max()
+    // swGrid.distances = newDistances.PathTo(goal)
 
-    newDistances := newStart.Distances()
-    goal, _ := newDistances.max()
+    // swGrid.distances = distances.PathTo(swGrid.grid[swGrid.rows-1][10])
 
-    swGrid.distances = newDistances.PathTo(goal)
-
-    // swGrid.ToPng(80)
-    // swGrid.distances = distances.PathTo(swGrid.grid[swGrid.rows-1][0])
-
-    fmt.Println(swGrid.ToString())
+    // fmt.Println(swGrid.ToString())
+    swGrid.ToPng(true, 80, "mazes/swGrid.png")
 }

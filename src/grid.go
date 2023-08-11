@@ -86,8 +86,22 @@ func (g *Grid) ToString() []string {
     return output
 }
 
-func (g *Grid) ToPng(cellSize int) {
-    f, err := os.Create("maze.png")
+func (g *Grid) backgroundColorFor(cell *Cell) color.RGBA {
+    distance, ok := g.distances.cells[cell]
+    if !ok {
+        return color.RGBA{0, 100, 0, 255}
+    }
+
+    _, maxDist := g.distances.Max()
+    intensity := float64(maxDist - distance) / float64(maxDist)
+    dark := uint8(255 * intensity)
+    bright := 128 + uint8(127 * intensity)
+
+    return color.RGBA{dark, bright, dark, 255}
+}
+
+func (g *Grid) ToPng(background bool, cellSize int, filepath string) {
+    f, err := os.Create(filepath)
     if err != nil {
         panic(err)
     }
@@ -97,8 +111,8 @@ func (g *Grid) ToPng(cellSize int) {
     imgHeight := g.rows * cellSize
     imgMargin := 20
 
-    background := color.RGBA{255, 255, 255, 255}
-    walls := color.RGBA{0, 0, 0, 255}
+    backgroundClr := color.RGBA{255, 255, 255, 255}
+    wallsClr := color.RGBA{0, 0, 0, 255}
 
     img := image.NewRGBA(
         image.Rect(
@@ -109,8 +123,9 @@ func (g *Grid) ToPng(cellSize int) {
         ),
     )
 
-    draw.Draw(img, img.Bounds(), &image.Uniform{background}, image.ZP, draw.Src)
+    draw.Draw(img, img.Bounds(), &image.Uniform{backgroundClr}, image.ZP, draw.Src)
 
+    drawMaze:
     for row := range g.grid {
         for col := range g.grid[0] {
             cell := g.grid[row][col]
@@ -120,19 +135,30 @@ func (g *Grid) ToPng(cellSize int) {
             x1 := (cell.col + 1) * cellSize
             y1 := (cell.row + 1) * cellSize
 
+            if background {
+                cellBackgroundClr := g.backgroundColorFor(cell)
+                drawRect(img, x0, y0, x1, y1, cellBackgroundClr)
+                continue
+            }
+
             if cell.North == nil {
-                drawRect(img, x0, y0, x1, y0, walls)
+                drawRect(img, x0, y0, x1, y0, wallsClr)
             }
             if cell.West == nil {
-                drawRect(img, x0, y0, x0, y1, walls)
+                drawRect(img, x0, y0, x0, y1, wallsClr)
             }
             if !cell.Linked(cell.East) {
-                drawRect(img, x1, y0, x1, y1, walls)
+                drawRect(img, x1, y0, x1, y1, wallsClr)
             }
             if !cell.Linked(cell.South) {
-                drawRect(img, x0, y1, x1, y1, walls)
+                drawRect(img, x0, y1, x1, y1, wallsClr)
             }
         }
+    }
+
+    if background {
+        background = false
+        goto drawMaze
     }
 
     if err = png.Encode(f, img); err != nil {
