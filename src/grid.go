@@ -44,9 +44,9 @@ func (g *Grid) Size() int {
     return g.rows * g.cols
 }
 
-func (g *Grid) ContentsOf(cell *Cell) string {
+func (g *Grid) contentsOf(cell *Cell) string {
     if val, ok := g.distances.cells[cell]; ok {
-        return fmt.Sprintf("%X", val)
+        return fmt.Sprintf("%X", val) // base-16
     }
     return " " // single space
 }
@@ -65,17 +65,17 @@ func (g *Grid) ToString() []string {
                 cell = NewCell(-1, -1)
             }
 
-            body := fmt.Sprintf(" %s ", g.ContentsOf(cell)) // three spaces
+            body := fmt.Sprintf(" %s ", g.contentsOf(cell)) // distance between 2 spaces
             corner := "+"
 
             eastBoundary := "│"
-            if cell.Linked(cell.East) {
+            if cell.Linked(cell.east) {
                 eastBoundary = " " // single space
             }
             top += body + eastBoundary
 
             southBoundary := "---"
-            if cell.Linked(cell.South) {
+            if cell.Linked(cell.south) {
                 southBoundary = "   " // three spaces
             }
             bot += southBoundary + corner
@@ -92,7 +92,7 @@ func (g *Grid) backgroundColorFor(cell *Cell) color.RGBA {
         return color.RGBA{0, 100, 0, 255}
     }
 
-    _, maxDist := g.distances.Max()
+    _, maxDist := g.distances.max()
     intensity := float64(maxDist - distance) / float64(maxDist)
     dark := uint8(255 * intensity)
     bright := 128 + uint8(127 * intensity)
@@ -141,16 +141,16 @@ func (g *Grid) ToPng(background bool, cellSize int, filepath string) {
                 continue
             }
 
-            if cell.North == nil {
+            if cell.north == nil {
                 drawRect(img, x0, y0, x1, y0, wallsClr)
             }
-            if cell.West == nil {
+            if cell.west == nil {
                 drawRect(img, x0, y0, x0, y1, wallsClr)
             }
-            if !cell.Linked(cell.East) {
+            if !cell.Linked(cell.east) {
                 drawRect(img, x1, y0, x1, y1, wallsClr)
             }
-            if !cell.Linked(cell.South) {
+            if !cell.Linked(cell.south) {
                 drawRect(img, x0, y1, x1, y1, wallsClr)
             }
         }
@@ -185,16 +185,16 @@ func configureCells(grid *Grid) {
         for col := range grid.grid[0] {
             cell := grid.grid[row][col]
             if row-1 >= 0 {
-                cell.North = grid.grid[row-1][col]
+                cell.north = grid.grid[row-1][col]
             }
             if row+1 < grid.rows {
-                cell.South = grid.grid[row+1][col]
+                cell.south = grid.grid[row+1][col]
             }
             if col-1 >= 0 {
-                cell.West = grid.grid[row][col-1]
+                cell.west = grid.grid[row][col-1]
             }
             if col+1 < grid.cols {
-                cell.East = grid.grid[row][col+1]
+                cell.east = grid.grid[row][col+1]
             }
         }
     }

@@ -1,8 +1,10 @@
 package main
 
+import "slices"
+
 type Cell struct {
     row, col int
-    North, South, East, West *Cell
+    north, south, east, west *Cell
     links map[*Cell]bool
 }
 
@@ -34,26 +36,21 @@ func (c *Cell) Links() (keys []*Cell) {
 }
 
 func (c *Cell) Linked(targetCell *Cell) bool {
-    for _, cell := range c.Links() {
-        if cell == targetCell {
-            return true
-        }
-    }
-    return false
+    return slices.Contains(c.Links(), targetCell)
 }
 
 func (c *Cell) Neighbors() (neighbors []*Cell) {
-    if c.North != nil {
-        neighbors = append(neighbors, c.North)
+    if c.north != nil {
+        neighbors = append(neighbors, c.north)
     }
-    if c.East != nil {
-        neighbors = append(neighbors, c.East)
+    if c.east != nil {
+        neighbors = append(neighbors, c.east)
     }
-    if c.South != nil {
-        neighbors = append(neighbors, c.South)
+    if c.south != nil {
+        neighbors = append(neighbors, c.south)
     }
-    if c.West != nil {
-        neighbors = append(neighbors, c.West)
+    if c.west != nil {
+        neighbors = append(neighbors, c.west)
     }
     return
 }

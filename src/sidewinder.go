@@ -4,9 +4,8 @@ import "math/rand"
 
 type Sidewinder struct {}
 
-func NewSiderwinder() (sw *Sidewinder) {
-    sw = &Sidewinder{}
-    return
+func NewSiderwinder() *Sidewinder {
+    return &Sidewinder{}
 }
 
 func (sw *Sidewinder) on(grid *Grid) {
@@ -17,19 +16,19 @@ func (sw *Sidewinder) on(grid *Grid) {
             cell := grid.grid[row][col]
             run = append(run, cell)
 
-            atEasternBoundary := (cell.East == nil)
-            atNorthernBoundary := (cell.North == nil)
+            atEasternBoundary := (cell.east == nil)
+            atNorthernBoundary := (cell.north == nil)
             shouldCloseOut := atEasternBoundary ||
                 (!atNorthernBoundary && rand.Intn(2) == 0)
 
             if shouldCloseOut {
                 member := run[rand.Intn(len(run))]
-                if member.North != nil {
-                    member.Link(member.North, true)
+                if member.north != nil {
+                    member.Link(member.north, true)
                 }
                 run = nil
             } else {
-                cell.Link(cell.East, true)
+                cell.Link(cell.east, true)
             }
         }
     }

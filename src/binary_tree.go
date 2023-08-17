@@ -4,9 +4,8 @@ import "math/rand"
 
 type BinaryTree struct {}
 
-func NewBinaryTree() (bt *BinaryTree) {
-    bt = &BinaryTree{}
-    return
+func NewBinaryTree() *BinaryTree {
+    return &BinaryTree{}
 }
 
 func (bt *BinaryTree) on(grid *Grid) {
@@ -15,11 +14,11 @@ func (bt *BinaryTree) on(grid *Grid) {
             cell := grid.grid[row][col]
 
             var neighbors []*Cell
-            if cell.North != nil {
-                neighbors = append(neighbors, cell.North)
+            if cell.north != nil {
+                neighbors = append(neighbors, cell.north)
             }
-            if cell.East != nil {
-                neighbors = append(neighbors, cell.East)
+            if cell.east != nil {
+                neighbors = append(neighbors, cell.east)
             }
 
             if len := len(neighbors); len > 0 {

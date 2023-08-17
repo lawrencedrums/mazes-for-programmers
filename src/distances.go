@@ -17,7 +17,7 @@ func (d *Distances) SetDistance(distance int ,cell *Cell) {
     d.cells[cell] = distance
 }
 
-// Cells returns list of all keys in cells hashmap
+// Cells returns list of all keys in d.cells hashmap
 func (d *Distances) Cells() (keys []*Cell) {
     for k := range d.cells {
         keys = append(keys, k)
@@ -43,7 +43,7 @@ func (d *Distances) PathTo(goal *Cell) *Distances {
     return breadcrumbs
 }
 
-func (d *Distances) Max() (*Cell, int) {
+func (d *Distances) max() (*Cell, int) {
     maxDist := 0
     maxCell := d.root
 
