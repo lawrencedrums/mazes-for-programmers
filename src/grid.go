@@ -89,13 +89,13 @@ func (g *Grid) ToString() []string {
 func (g *Grid) backgroundColorFor(cell *Cell) color.RGBA {
     distance, ok := g.distances.cells[cell]
     if !ok {
-        return color.RGBA{0, 100, 0, 255}
+        return color.RGBA{0, 50, 0, 255}
     }
 
     _, maxDist := g.distances.max()
     intensity := float64(maxDist - distance) / float64(maxDist)
     dark := uint8(255 * intensity)
-    bright := 128 + uint8(127 * intensity)
+    bright := 55 + uint8(200 * intensity)
 
     return color.RGBA{dark, bright, dark, 255}
 }

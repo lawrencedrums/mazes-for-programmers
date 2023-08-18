@@ -1,32 +1,33 @@
 package main
 
+import "fmt"
+
 func main() {
-    btGrid := NewGrid(20, 20)
-    swGrid := NewGrid(20, 20)
+    rows, cols := 20, 20
+    grid := NewGrid(rows, cols)
 
-    bt := NewBinaryTree()
-    bt.on(btGrid)
+    ab := NewAldousBroder()
+    ab.on(grid)
 
-    // fmt.Println(btGrid.ToString())
-    btGridStart := btGrid.grid[10][10]
-    btGrid.distances = btGridStart.Distances()
+    // start := grid.grid[0][0]
+    // distances := start.Distances()
+    // grid.distances = distances.PathTo(grid.grid[rows-1][cols-1])
 
-    btGrid.ToPng(true, 80, "mazes/btGrid.png")
+    fmt.Println(grid.ToString())
+    coloredMazes(rows, cols)
+}
 
-    sw := NewSiderwinder()
-    sw.on(swGrid)
+func coloredMazes(rows, cols int) {
+    ab := NewAldousBroder()
 
-    swGridStart := swGrid.grid[10][10]
-    swGrid.distances = swGridStart.Distances()
+    for i := 0; i < 5; i++ {
+        grid := NewGrid(rows, cols)
+        ab.on(grid)
 
-    // find longest path
-    // newStart, _ := distances.Max()
-    // newDistances := newStart.Distances()
-    // goal, _ := newDistances.Max()
-    // swGrid.distances = newDistances.PathTo(goal)
+        middle := grid.grid[rows/2][cols/2]
+        grid.distances = middle.Distances()
 
-    // swGrid.distances = distances.PathTo(swGrid.grid[swGrid.rows-1][10])
-
-    // fmt.Println(swGrid.ToString())
-    swGrid.ToPng(true, 80, "mazes/swGrid.png")
+        filename := fmt.Sprintf("mazes/ab_%02d.png", i+1)
+        grid.ToPng(true, 80, filename)
+    }
 }
