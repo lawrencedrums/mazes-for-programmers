@@ -102,11 +102,13 @@ func (g *Grid) backgroundColorFor(cell *Cell) color.RGBA {
     }
 
     _, maxDist := g.distances.max()
-    intensity := float64(maxDist - distance) / float64(maxDist)
-    dark := uint8(255 * intensity)
-    bright := 55 + uint8(200 * intensity)
+    steps := float64(maxDist - (maxDist - distance))
+    intensity := 1.0 - (steps / (float64(maxDist)/10 + steps))
 
-    return color.RGBA{dark, bright, dark, 255}
+    // dark := uint8(255 * intensity)
+    bright := 20 + uint8(200 * intensity)
+
+    return color.RGBA{bright, 0, bright, 255}
 }
 
 func (g *Grid) ToPng(background bool, cellSize int, filepath string) {

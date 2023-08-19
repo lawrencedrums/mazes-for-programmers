@@ -2,33 +2,34 @@ package main
 
 import "fmt"
 
+type algo func(*Grid)
+
 func main() {
-	rows, cols := 10, 10
+	rows, cols := 25, 25
 	grid := NewGrid(rows, cols)
 
 	fmt.Println()
 
-	ws := NewWilsons()
-	ws.on(grid)
+	algo := NewHuntAndKill()
+	algo.on(grid)
 
 	// start := grid.grid[0][0]
 	// distances := start.Distances()
 	// grid.distances = distances.PathTo(grid.grid[rows-1][cols-1])
 
 	fmt.Println(grid.ToString())
+    coloredMazes(algo.on, rows, cols)
 }
 
-func coloredMazes(rows, cols int) {
-	ab := NewAldousBroder()
-
+func coloredMazes(algo func(*Grid), rows, cols int) {
 	for i := 0; i < 5; i++ {
 		grid := NewGrid(rows, cols)
-		ab.on(grid)
+		algo(grid)
 
 		middle := grid.grid[rows/2][cols/2]
 		grid.distances = middle.Distances()
 
-		filename := fmt.Sprintf("mazes/ab_%02d.png", i+1)
+		filename := fmt.Sprintf("mazes/%02d.png", i+1)
 		grid.ToPng(true, 80, filename)
 	}
 }
