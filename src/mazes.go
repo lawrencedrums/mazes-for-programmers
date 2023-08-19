@@ -3,31 +3,32 @@ package main
 import "fmt"
 
 func main() {
-    rows, cols := 20, 20
-    grid := NewGrid(rows, cols)
+	rows, cols := 10, 10
+	grid := NewGrid(rows, cols)
 
-    ab := NewAldousBroder()
-    ab.on(grid)
+	fmt.Println()
 
-    // start := grid.grid[0][0]
-    // distances := start.Distances()
-    // grid.distances = distances.PathTo(grid.grid[rows-1][cols-1])
+	ws := NewWilsons()
+	ws.on(grid)
 
-    fmt.Println(grid.ToString())
-    coloredMazes(rows, cols)
+	// start := grid.grid[0][0]
+	// distances := start.Distances()
+	// grid.distances = distances.PathTo(grid.grid[rows-1][cols-1])
+
+	fmt.Println(grid.ToString())
 }
 
 func coloredMazes(rows, cols int) {
-    ab := NewAldousBroder()
+	ab := NewAldousBroder()
 
-    for i := 0; i < 5; i++ {
-        grid := NewGrid(rows, cols)
-        ab.on(grid)
+	for i := 0; i < 5; i++ {
+		grid := NewGrid(rows, cols)
+		ab.on(grid)
 
-        middle := grid.grid[rows/2][cols/2]
-        grid.distances = middle.Distances()
+		middle := grid.grid[rows/2][cols/2]
+		grid.distances = middle.Distances()
 
-        filename := fmt.Sprintf("mazes/ab_%02d.png", i+1)
-        grid.ToPng(true, 80, filename)
-    }
+		filename := fmt.Sprintf("mazes/ab_%02d.png", i+1)
+		grid.ToPng(true, 80, filename)
+	}
 }

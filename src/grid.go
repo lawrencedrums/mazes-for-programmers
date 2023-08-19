@@ -34,6 +34,15 @@ func NewGrid(rows, cols int) *Grid {
     return grid
 }
 
+func (g *Grid) AllCells() (cells []*Cell) {
+    for row := range g.grid {
+        for col := range g.grid[0] {
+            cells = append(cells, g.grid[row][col])
+        }
+    }
+    return
+}
+
 func (g *Grid) RandomCell() *Cell {
     randRow := rand.Intn(g.rows)
     randCol := rand.Intn(g.cols)

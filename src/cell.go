@@ -1,6 +1,9 @@
 package main
 
-import "slices"
+import (
+	"math/rand"
+	"slices"
+)
 
 type Cell struct {
     row, col int
@@ -53,6 +56,11 @@ func (c *Cell) Neighbors() (neighbors []*Cell) {
         neighbors = append(neighbors, c.west)
     }
     return
+}
+
+func (c *Cell) RandomNeighbor() *Cell {
+    neighbors := c.Neighbors()
+    return neighbors[rand.Intn(len(neighbors))]
 }
 
 func (c *Cell) Distances() *Distances {
