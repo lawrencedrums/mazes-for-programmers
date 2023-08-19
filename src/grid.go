@@ -43,6 +43,15 @@ func (g *Grid) AllCells() (cells []*Cell) {
     return
 }
 
+func (g *Grid) DeadEnds() (list []*Cell) {
+    for _, cell := range g.AllCells() {
+        if len(cell.Links()) == 1 {
+            list = append(list, cell)
+        }
+    }
+    return list 
+}
+
 func (g *Grid) RandomCell() *Cell {
     randRow := rand.Intn(g.rows)
     randCol := rand.Intn(g.cols)
