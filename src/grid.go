@@ -44,12 +44,16 @@ func (g *Grid) AllCells() (cells []*Cell) {
 }
 
 func (g *Grid) DeadEnds() (list []*Cell) {
-    for _, cell := range g.AllCells() {
-        if len(cell.Links()) == 1 {
-            list = append(list, cell)
+    for row := range g.grid {
+        for col := range g.grid[0] {
+            cell := g.grid[row][col]
+
+            if len(cell.Links()) == 1 {
+                list = append(list, cell)
+            }
         }
     }
-    return list 
+    return
 }
 
 func (g *Grid) RandomCell() *Cell {

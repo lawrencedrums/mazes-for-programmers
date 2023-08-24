@@ -6,9 +6,7 @@ func main() {
 	rows, cols := 20, 20
 	grid := NewGrid(rows, cols)
 
-	fmt.Println()
-
-	algo := NewHuntAndKill()
+	algo := NewRecursiveBacktracker()
 	algo.on(grid)
 
 	// start := grid.grid[0][0]
@@ -19,6 +17,8 @@ func main() {
 
     // coloredMazes(algo.on, rows, cols)
     compareDeadends(rows, cols)
+
+    fmt.Println("done")
 }
 
 func coloredMazes(algo func(*Grid), rows, cols int) {
@@ -41,6 +41,7 @@ func compareDeadends(rows, cols int) {
         "aldous_broder": NewAldousBroder().on,
         "wilsons": NewWilsons().on,
         "hunt_and_kill": NewHuntAndKill().on,
+        "recursive_backtracker": NewRecursiveBacktracker().on,
     }
 
     tries := 100
@@ -80,6 +81,6 @@ func compareDeadends(rows, cols int) {
     for i, algo := range sortedAlgos {
         deadends := sortedDeadends[i]
         percentage := float64(deadends) * 100.0 / float64(rows * cols)
-        fmt.Printf("%16s: %3d/%d %.2f%%\n", algo, deadends, rows*cols, percentage)
+        fmt.Printf("%25s: %3d/%d %.2f%%\n", algo, deadends, rows*cols, percentage)
     }
 }
