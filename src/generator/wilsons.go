@@ -1,18 +1,18 @@
-package main
+package generator
 
 import (
 	"math/rand"
 	"slices"
+
+    "mazes/grid"
+    c "mazes/grid/cell"
 )
 
-type Wilsons struct{}
-
-func NewWilsons() *Wilsons {
-	return &Wilsons{}
-}
-
-func (w *Wilsons) on(grid *Grid) {
-	unvisited := grid.AllCells()
+func Wilsons(grid *grid.Grid) {
+    unvisited := make([]*c.Cell, grid.Size())
+    for cell := range grid.Cells() {
+        unvisited = append(unvisited, cell)
+    }
 
 	firstIdx := rand.Intn(len(unvisited))
 	unvisited = slices.Delete(unvisited, firstIdx, firstIdx+1)
@@ -20,7 +20,7 @@ func (w *Wilsons) on(grid *Grid) {
 	for len(unvisited) > 0 {
 		cell := unvisited[rand.Intn(len(unvisited))]
 
-		var path []*Cell
+		var path []*c.Cell
 		path = append(path, cell)
 
 		for slices.Contains(unvisited, cell) {
@@ -48,7 +48,7 @@ func (w *Wilsons) on(grid *Grid) {
 	}
 }
 
-func remove(path []*Cell, target *Cell) []*Cell{
+func remove(path []*c.Cell, target *c.Cell) []*c.Cell{
 	for i, cell := range path {
 		if cell == target {
 			return slices.Delete(path, i, i+1)

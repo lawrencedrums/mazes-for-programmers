@@ -1,14 +1,12 @@
-package main
+package generator
 
-import "math/rand"
+import (
+    "math/rand"
 
-type AldousBroder struct {}
+    "mazes/grid"
+)
 
-func NewAldousBroder() *AldousBroder {
-    return &AldousBroder{}
-}
-
-func (ab *AldousBroder) on(grid *Grid) {
+func AldousBroder(grid *grid.Grid) {
     cell := grid.RandomCell()
     unvisited := grid.Size() - 1
 

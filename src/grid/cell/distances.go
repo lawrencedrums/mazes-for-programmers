@@ -1,4 +1,4 @@
-package main
+package cell
 
 type Distances struct {
     root *Cell
@@ -15,6 +15,11 @@ func NewDistances(root *Cell) (distances *Distances) {
 
 func (d *Distances) SetDistance(distance int ,cell *Cell) {
     d.cells[cell] = distance
+}
+
+func (d *Distances) Cell(key *Cell) (distance int, ok bool) {
+    distance, ok = d.cells[key]
+    return
 }
 
 // Cells returns list of all keys in d.cells hashmap
@@ -43,7 +48,7 @@ func (d *Distances) PathTo(goal *Cell) *Distances {
     return breadcrumbs
 }
 
-func (d *Distances) max() (*Cell, int) {
+func (d *Distances) Max() (*Cell, int) {
     maxDist := 0
     maxCell := d.root
 

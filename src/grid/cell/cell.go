@@ -1,4 +1,4 @@
-package main
+package cell
 
 import (
 	"math/rand"
@@ -6,14 +6,14 @@ import (
 )
 
 type Cell struct {
-    row, col int
-    north, south, east, west *Cell
+    Row, Col int
+    North, South, East, West *Cell
     links map[*Cell]bool
 }
 
 func NewCell(row, col int) (cell *Cell) {
     links := make(map[*Cell]bool)
-    cell = &Cell{row: row, col: col, links: links}
+    cell = &Cell{Row: row, Col: col, links: links}
     return
 }
 
@@ -43,17 +43,17 @@ func (c *Cell) Linked(targetCell *Cell) bool {
 }
 
 func (c *Cell) Neighbors() (neighbors []*Cell) {
-    if c.north != nil {
-        neighbors = append(neighbors, c.north)
+    if c.North != nil {
+        neighbors = append(neighbors, c.North)
     }
-    if c.east != nil {
-        neighbors = append(neighbors, c.east)
+    if c.East != nil {
+        neighbors = append(neighbors, c.East)
     }
-    if c.south != nil {
-        neighbors = append(neighbors, c.south)
+    if c.South != nil {
+        neighbors = append(neighbors, c.South)
     }
-    if c.west != nil {
-        neighbors = append(neighbors, c.west)
+    if c.West != nil {
+        neighbors = append(neighbors, c.West)
     }
     return
 }

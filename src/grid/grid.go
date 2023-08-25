@@ -1,4 +1,4 @@
-package main
+package grid
 
 import (
 	"fmt"
@@ -9,41 +9,73 @@ import (
 	"math/rand"
 	"os"
 	"strings"
+
+    c "mazes/grid/cell"
 )
+
+type Grider interface {
+    DeadEnds() []*c.Cell
+    RandomCell() *c.Cell
+    Size() int
+    ToPng(filename string, cellSize int)
+    ToString() []string
+
+    Rows() <-chan []*c.Cell
+    Cells() <-chan *c.Cell
+
+    prepareGrid()
+}
 
 type Grid struct {
     rows, cols int
-    grid [][]*Cell
-    distances *Distances
+    grid [][]*c.Cell
+    distances *c.Distances
 }
 
 func NewGrid(rows, cols int) *Grid {
-    cells := make([][]*Cell, rows)
+    cells := make([][]*c.Cell, rows)
     for i := range cells {
-        cells[i] = make([]*Cell, cols)
+        cells[i] = make([]*c.Cell, cols)
     }
 
     grid := &Grid{
         rows: rows,
         cols: cols,
         grid: cells,
-        distances: &Distances{},
+        distances: &c.Distances{},
     }
-    prepareGrid(grid)
-    configureCells(grid)
+    grid.prepareGrid()
+    grid.configureCells()
     return grid
 }
 
-func (g *Grid) AllCells() (cells []*Cell) {
-    for row := range g.grid {
-        for col := range g.grid[0] {
-            cells = append(cells, g.grid[row][col])
+func (g *Grid) Cells() <-chan *c.Cell {
+    ch := make(chan *c.Cell, 1)
+    go func() {
+        for _, row := range g.grid {
+            for _, cell := range row {
+                if cell != nil {
+                    ch <- cell
+                }
+            }
         }
-    }
-    return
+        close(ch)
+    }()
+    return ch
 }
 
-func (g *Grid) DeadEnds() (list []*Cell) {
+func (g *Grid) Rows() <-chan []*c.Cell {
+    ch := make(chan []*c.Cell)
+    go func() {
+        for _, row := range g.grid {
+            ch <- row
+        }
+        close(ch)
+    }()
+    return ch
+}
+
+func (g *Grid) DeadEnds() (list []*c.Cell) {
     for row := range g.grid {
         for col := range g.grid[0] {
             cell := g.grid[row][col]
@@ -56,7 +88,7 @@ func (g *Grid) DeadEnds() (list []*Cell) {
     return
 }
 
-func (g *Grid) RandomCell() *Cell {
+func (g *Grid) RandomCell() *c.Cell {
     randRow := rand.Intn(g.rows)
     randCol := rand.Intn(g.cols)
     return g.grid[randRow][randCol]
@@ -66,8 +98,8 @@ func (g *Grid) Size() int {
     return g.rows * g.cols
 }
 
-func (g *Grid) contentsOf(cell *Cell) string {
-    if val, ok := g.distances.cells[cell]; ok {
+func (g *Grid) contentsOf(cell *c.Cell) string {
+    if val, ok := g.distances.Cell(cell); ok {
         return fmt.Sprintf("%X", val) // base-16
     }
     return " " // single space
@@ -84,20 +116,20 @@ func (g *Grid) ToString() []string {
         for col := range g.grid[0] {
             cell := g.grid[row][col]
             if cell == nil {
-                cell = NewCell(-1, -1)
+                cell = c.NewCell(-1, -1)
             }
 
             body := fmt.Sprintf(" %s ", g.contentsOf(cell)) // distance between 2 spaces
             corner := "+"
 
             eastBoundary := "│"
-            if cell.Linked(cell.east) {
+            if cell.Linked(cell.East) {
                 eastBoundary = " " // single space
             }
             top += body + eastBoundary
 
             southBoundary := "---"
-            if cell.Linked(cell.south) {
+            if cell.Linked(cell.South) {
                 southBoundary = "   " // three spaces
             }
             bot += southBoundary + corner
@@ -108,13 +140,13 @@ func (g *Grid) ToString() []string {
     return output
 }
 
-func (g *Grid) backgroundColorFor(cell *Cell) color.RGBA {
-    distance, ok := g.distances.cells[cell]
+func (g *Grid) backgroundColorFor(cell *c.Cell) color.RGBA {
+    distance, ok := g.distances.Cell(cell)
     if !ok {
         return color.RGBA{0, 50, 0, 255}
     }
 
-    _, maxDist := g.distances.max()
+    _, maxDist := g.distances.Max()
     steps := float64(maxDist - (maxDist - distance))
     intensity := 1.0 - (steps / (float64(maxDist)/10 + steps))
 
@@ -124,8 +156,8 @@ func (g *Grid) backgroundColorFor(cell *Cell) color.RGBA {
     return color.RGBA{bright, 0, bright, 255}
 }
 
-func (g *Grid) ToPng(background bool, cellSize int, filepath string) {
-    f, err := os.Create(filepath)
+func (g *Grid) ToPng(filename string, cellSize int) {
+    f, err := os.Create(filename)
     if err != nil {
         panic(err)
     }
@@ -133,19 +165,11 @@ func (g *Grid) ToPng(background bool, cellSize int, filepath string) {
 
     imgWidth := g.cols * cellSize
     imgHeight := g.rows * cellSize
-    imgMargin := 20
+    img := image.NewRGBA(image.Rect(0, 0, imgWidth, imgHeight))
 
+    background := true
     backgroundClr := color.RGBA{255, 255, 255, 255}
     wallsClr := color.RGBA{0, 0, 0, 255}
-
-    img := image.NewRGBA(
-        image.Rect(
-            -imgMargin,
-            -imgMargin,
-            imgWidth+imgMargin,
-            imgHeight+imgMargin,
-        ),
-    )
 
     draw.Draw(img, img.Bounds(), &image.Uniform{backgroundClr}, image.ZP, draw.Src)
 
@@ -154,10 +178,10 @@ func (g *Grid) ToPng(background bool, cellSize int, filepath string) {
         for col := range g.grid[0] {
             cell := g.grid[row][col]
 
-            x0 := cell.col * cellSize
-            y0 := cell.row * cellSize
-            x1 := (cell.col + 1) * cellSize
-            y1 := (cell.row + 1) * cellSize
+            x0 := cell.Col * cellSize
+            y0 := cell.Row * cellSize
+            x1 := (cell.Col + 1) * cellSize
+            y1 := (cell.Row + 1) * cellSize
 
             if background {
                 cellBackgroundClr := g.backgroundColorFor(cell)
@@ -165,16 +189,16 @@ func (g *Grid) ToPng(background bool, cellSize int, filepath string) {
                 continue
             }
 
-            if cell.north == nil {
+            if cell.North == nil {
                 drawRect(img, x0, y0, x1, y0, wallsClr)
             }
-            if cell.west == nil {
+            if cell.West == nil {
                 drawRect(img, x0, y0, x0, y1, wallsClr)
             }
-            if !cell.Linked(cell.east) {
+            if !cell.Linked(cell.East) {
                 drawRect(img, x1, y0, x1, y1, wallsClr)
             }
-            if !cell.Linked(cell.south) {
+            if !cell.Linked(cell.South) {
                 drawRect(img, x0, y1, x1, y1, wallsClr)
             }
         }
@@ -196,29 +220,29 @@ func drawRect(img draw.Image, x0, y0, x1, y1 int, clr color.Color) {
     draw.Draw(img, rect, &image.Uniform{clr}, image.ZP, draw.Src)
 }
 
-func prepareGrid(grid *Grid) {
-    for row := range grid.grid {
-        for col := range grid.grid[0] {
-            grid.grid[row][col] = NewCell(row, col)
+func (g *Grid) prepareGrid() {
+    for row := range g.grid {
+        for col := range g.grid[0] {
+            g.grid[row][col] = c.NewCell(row, col)
         }
     }
 }
 
-func configureCells(grid *Grid) {
-    for row := range grid.grid {
-        for col := range grid.grid[0] {
-            cell := grid.grid[row][col]
+func (g *Grid) configureCells() {
+    for row := range g.grid {
+        for col := range g.grid[0] {
+            cell := g.grid[row][col]
             if row-1 >= 0 {
-                cell.north = grid.grid[row-1][col]
+                cell.North = g.grid[row-1][col]
             }
-            if row+1 < grid.rows {
-                cell.south = grid.grid[row+1][col]
+            if row+1 < g.rows {
+                cell.South = g.grid[row+1][col]
             }
             if col-1 >= 0 {
-                cell.west = grid.grid[row][col-1]
+                cell.West = g.grid[row][col-1]
             }
-            if col+1 < grid.cols {
-                cell.east = grid.grid[row][col+1]
+            if col+1 < g.cols {
+                cell.East = g.grid[row][col+1]
             }
         }
     }
