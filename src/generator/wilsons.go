@@ -8,8 +8,8 @@ import (
     c "mazes/grid/cell"
 )
 
-func Wilsons(grid *grid.Grid) {
-    unvisited := make([]*c.Cell, grid.Size())
+func Wilsons(grid grid.Grider) {
+    var unvisited []*c.Cell
     for cell := range grid.Cells() {
         unvisited = append(unvisited, cell)
     }

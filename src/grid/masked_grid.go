@@ -3,25 +3,28 @@ package grid
 import (
     "math/rand"
 
-    "mazes/grid/cell"
+    c "mazes/grid/cell"
 )
 
 type MaskedGrid struct {
+    *Grid
     mask *Mask
-    grid [][]*cell.Cell
 }
 
 func NewMaskedGrid(mask *Mask) (maskedGrid *MaskedGrid) {
-    grid := make([][]*cell.Cell, mask.rows)
-    for row := range grid {
-        grid[row] = make([]*cell.Cell, mask.cols)
+    maskedGrid = &MaskedGrid{
+        &Grid{
+            rows: mask.rows,
+            cols: mask.cols,
+        },
+        mask,
     }
-
-    maskedGrid = &MaskedGrid{mask, grid}
+    maskedGrid.prepareGrid()
+    maskedGrid.configureCells()
     return
 }
 
-func (mg *MaskedGrid) RandomCell() *cell.Cell {
+func (mg *MaskedGrid) RandomCell() *c.Cell {
     row := rand.Intn(mg.mask.rows)
     col := rand.Intn(mg.mask.cols)
     return mg.grid[row][col]
@@ -31,12 +34,17 @@ func (mg *MaskedGrid) Size() int {
     return mg.mask.Count()
 }
 
-func prepareMaskedGrid(grid *MaskedGrid) {
-    for row := range grid.mask.bits {
-        for col := range grid.mask.bits[0] {
-            if grid.mask.bits[row][col] {
-                grid.grid[row][col] = cell.NewCell(row, col)
+func (mg *MaskedGrid) prepareGrid() {
+    grid := make([][]*c.Cell, mg.rows)
+    for row := range grid {
+        column := make([]*c.Cell, mg.cols)
+        grid[row] = column
+
+        for col := range column {
+            if mg.mask.bits[row][col] {
+                grid[row][col] = c.NewCell(row, col)
             }
         }
     }
+    mg.grid = grid
 }

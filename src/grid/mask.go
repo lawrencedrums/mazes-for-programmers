@@ -1,6 +1,10 @@
 package grid
 
-import "math/rand"
+import (
+    "bufio"
+    "math/rand"
+    "os"
+)
 
 type Mask struct {
     rows, cols int
@@ -10,6 +14,8 @@ type Mask struct {
 func NewMask(rows, cols int) *Mask {
     bits := make([][]bool, rows)
     for row := range bits {
+        bits[row] = make([]bool, cols)
+
         for col := range bits[0] {
             bits[row][col] = true
         }
@@ -36,4 +42,42 @@ func (m *Mask) RandomLocation() (row, col int) {
             return
         }
     }
+}
+
+func (m *Mask) SetBit(row, col int, switchOn bool) {
+    m.bits[row][col] = switchOn
+}
+
+
+func MaskFromTxt(filename string) *Mask {
+    lines := readlines(filename)
+
+    rows := len(lines)
+    cols := len(lines[0])
+    mask := NewMask(rows, cols)
+
+    for row := range mask.bits {
+        for col := range mask.bits[0] {
+            if string(lines[row][col]) == "x" {
+                mask.bits[row][col] = false
+            } else {
+                mask.bits[row][col] = true
+            }
+        }
+    }
+    return mask
+}
+
+func readlines(filename string) (lines []string) {
+    f, err := os.Open(filename)
+    if err != nil {
+        panic(err)
+    }
+    defer f.Close()
+
+    scanner := bufio.NewScanner(f)
+    for scanner.Scan() {
+        lines = append(lines, scanner.Text())
+    }
+    return lines
 }

@@ -7,7 +7,7 @@ import (
     c "mazes/grid/cell"
 )
 
-func HuntAndKill(grid *grid.Grid) {
+func HuntAndKill(grid grid.Grider) {
     current := grid.RandomCell()
 
     for current != nil {

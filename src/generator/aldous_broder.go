@@ -6,7 +6,7 @@ import (
     "mazes/grid"
 )
 
-func AldousBroder(grid *grid.Grid) {
+func AldousBroder(grid grid.Grider) {
     cell := grid.RandomCell()
     unvisited := grid.Size() - 1
 

@@ -7,14 +7,14 @@ import (
     c "mazes/grid/cell"
 )
 
-func BinaryTree(grid *grid.Grid) {
+func BinaryTree(grid grid.Grider) {
     for cell := range grid.Cells() {
         var neighbors []*c.Cell
-        if cell.North != nil {
-            neighbors = append(neighbors, cell.North)
+        if cell.North() != nil {
+            neighbors = append(neighbors, cell.North())
         }
-        if cell.East != nil {
-            neighbors = append(neighbors, cell.East)
+        if cell.East() != nil {
+            neighbors = append(neighbors, cell.East())
         }
 
         if len := len(neighbors); len > 0 {

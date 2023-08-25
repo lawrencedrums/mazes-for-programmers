@@ -7,9 +7,8 @@ import (
     "mazes/grid/cell"
 )
 
-func RecursiveBacktracker(grid *grid.Grid) {
-    var stack []*cell.Cell
-    stack = append(stack, grid.RandomCell())
+func RecursiveBacktracker(grid grid.Grider) {
+    stack := []*cell.Cell{grid.RandomCell()}
 
     for len(stack) > 0 {
         current := stack[len(stack)-1]

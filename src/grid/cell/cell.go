@@ -6,14 +6,21 @@ import (
 )
 
 type Cell struct {
-    Row, Col int
-    North, South, East, West *Cell
+    row, col int
+    north, south, east, west *Cell
     links map[*Cell]bool
 }
 
 func NewCell(row, col int) (cell *Cell) {
-    links := make(map[*Cell]bool)
-    cell = &Cell{Row: row, Col: col, links: links}
+    cell = &Cell{
+        row: row,
+        col: col,
+        north: nil,
+        south: nil,
+        east: nil,
+        west: nil,
+        links: make(map[*Cell]bool),
+    }
     return
 }
 
@@ -43,17 +50,17 @@ func (c *Cell) Linked(targetCell *Cell) bool {
 }
 
 func (c *Cell) Neighbors() (neighbors []*Cell) {
-    if c.North != nil {
-        neighbors = append(neighbors, c.North)
+    if c.North() != nil {
+        neighbors = append(neighbors, c.North())
     }
-    if c.East != nil {
-        neighbors = append(neighbors, c.East)
+    if c.East() != nil {
+        neighbors = append(neighbors, c.East())
     }
-    if c.South != nil {
-        neighbors = append(neighbors, c.South)
+    if c.South() != nil {
+        neighbors = append(neighbors, c.South())
     }
-    if c.West != nil {
-        neighbors = append(neighbors, c.West)
+    if c.West() != nil {
+        neighbors = append(neighbors, c.West())
     }
     return
 }
@@ -83,4 +90,44 @@ func (c *Cell) Distances() *Distances {
         frontier = newFrontier
     }
     return dist
+}
+
+func (c *Cell) Row() int {
+    return c.row
+}
+
+func (c *Cell) Col() int {
+    return c.col
+}
+
+func (c *Cell) SetNorth(cell *Cell) {
+    c.north = cell
+}
+
+func (c *Cell) SetSouth(cell *Cell) {
+    c.south = cell
+}
+
+func (c *Cell) SetEast(cell *Cell) {
+    c.east = cell
+}
+
+func (c *Cell) SetWest(cell *Cell) {
+    c.west = cell
+}
+
+func (c *Cell) North() *Cell {
+    return c.north
+}
+
+func (c *Cell) South() *Cell {
+    return c.south
+}
+
+func (c *Cell) East() *Cell {
+    return c.east
+}
+
+func (c *Cell) West() *Cell {
+    return c.west
 }
