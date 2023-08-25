@@ -3,10 +3,10 @@ package generator
 import (
     "math/rand"
 
-    "mazes/grid"
+    "mazes/models"
 )
 
-func AldousBroder(grid grid.Grider) {
+func AldousBroder(grid models.Grider) {
     cell := grid.RandomCell()
     unvisited := grid.Size() - 1
 

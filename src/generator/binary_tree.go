@@ -3,11 +3,11 @@ package generator
 import (
     "math/rand"
 
-    "mazes/grid"
-    c "mazes/grid/cell"
+    "mazes/models"
+    c "mazes/models/cell"
 )
 
-func BinaryTree(grid grid.Grider) {
+func BinaryTree(grid models.Grider) {
     for cell := range grid.Cells() {
         var neighbors []*c.Cell
         if cell.North() != nil {

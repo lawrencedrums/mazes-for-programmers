@@ -1,9 +1,9 @@
-package grid
+package models
 
 import (
     "math/rand"
 
-    c "mazes/grid/cell"
+    c "mazes/models/cell"
 )
 
 type MaskedGrid struct {

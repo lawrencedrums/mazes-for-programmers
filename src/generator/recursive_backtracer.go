@@ -3,17 +3,17 @@ package generator
 import (
     "math/rand"
 
-    "mazes/grid"
-    "mazes/grid/cell"
+    "mazes/models"
+    c "mazes/models/cell"
 )
 
-func RecursiveBacktracker(grid grid.Grider) {
-    stack := []*cell.Cell{grid.RandomCell()}
+func RecursiveBacktracker(grid models.Grider) {
+    stack := []*c.Cell{grid.RandomCell()}
 
     for len(stack) > 0 {
         current := stack[len(stack)-1]
 
-        var neighborsNoLinks []*cell.Cell
+        var neighborsNoLinks []*c.Cell
         for _, neighbor := range current.Neighbors() {
             if len(neighbor.Links()) == 0 {
                 neighborsNoLinks = append(neighborsNoLinks, neighbor)
@@ -30,7 +30,7 @@ func RecursiveBacktracker(grid grid.Grider) {
     }
 }
 
-func pop(stack []*cell.Cell) (poppedCell *cell.Cell, poppedStack []*cell.Cell) {
+func pop(stack []*c.Cell) (poppedCell *c.Cell, poppedStack []*c.Cell) {
     lastIdx := len(stack) - 1
     poppedCell, poppedStack = stack[lastIdx], stack[:lastIdx]
     return

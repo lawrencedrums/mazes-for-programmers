@@ -1,4 +1,4 @@
-package cell
+package models
 
 type Distances struct {
     root *Cell

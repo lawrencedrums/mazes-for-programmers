@@ -3,13 +3,13 @@ package generator
 import (
     "math/rand"
 
-    "mazes/grid"
-    "mazes/grid/cell"
+    "mazes/models"
+    c "mazes/models/cell"
 )
 
-func Sidewinder(grid grid.Grider) {
+func Sidewinder(grid models.Grider) {
     for row := range grid.Rows() {
-        var run []*cell.Cell
+        var run []*c.Cell
 
         for _, cell := range row {
             run = append(run, cell)

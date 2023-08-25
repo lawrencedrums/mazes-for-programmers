@@ -1,4 +1,4 @@
-package cell
+package models
 
 import (
 	"math/rand"

@@ -4,11 +4,11 @@ import (
     "fmt"
 
     "mazes/generator"
-    "mazes/grid"
+    "mazes/models"
 )
 
 func CompareDeadends(rows, cols int) {
-    algos := map[string]func(grid.Grider){
+    algos := map[string]func(models.Grider){
         "binary_tree": generator.BinaryTree,
         "siderwinder": generator.Sidewinder,
         "aldous_broder": generator.AldousBroder,
@@ -25,7 +25,7 @@ func CompareDeadends(rows, cols int) {
         totalDeadends := 0
         deadendCounts := make([]int, tries)
         for i := 0; i < tries; i++ {
-            grid := grid.NewGrid(rows, cols)
+            grid := models.NewGrid(rows, cols)
             algo(grid)
 
             deadendCounts[i] = len(grid.Deadends())
@@ -50,7 +50,7 @@ func CompareDeadends(rows, cols int) {
         delete(averages, minAlgo)
     }
 
-    fmt.Println("Average deadends per maze:")
+    fmt.Println("\nAverage deadends per maze:")
     for i, algo := range sortedAlgos {
         deadends := sortedDeadends[i]
         percentage := float64(deadends) * 100.0 / float64(rows * cols)

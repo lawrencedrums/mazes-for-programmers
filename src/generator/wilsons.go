@@ -4,11 +4,11 @@ import (
 	"math/rand"
 	"slices"
 
-    "mazes/grid"
-    c "mazes/grid/cell"
+    "mazes/models"
+    c "mazes/models/cell"
 )
 
-func Wilsons(grid grid.Grider) {
+func Wilsons(grid models.Grider) {
     var unvisited []*c.Cell
     for cell := range grid.Cells() {
         unvisited = append(unvisited, cell)

@@ -1,4 +1,4 @@
-package grid
+package models
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-    c "mazes/grid/cell"
+    c "mazes/models/cell"
 )
 
 type Grider interface {

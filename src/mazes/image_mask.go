@@ -2,12 +2,12 @@ package main
 
 import (
     "mazes/generator"
-    "mazes/grid"
+    "mazes/models"
 )
 
 func main() {
-    mask := grid.MaskFromPng("masks/mask.png")
-    grid := grid.NewMaskedGrid(mask)
+    mask := models.MaskFromPng("masks/mask.png")
+    grid := models.NewMaskedGrid(mask)
 
     generator.RecursiveBacktracker(grid)
 

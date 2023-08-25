@@ -4,17 +4,17 @@ import (
     "fmt"
 
     "mazes/generator"
-    "mazes/grid"
+    "mazes/models"
 )
 
 func main() {
-    mask := grid.NewMask(5, 5)
+    mask := models.NewMask(5, 5)
 
     mask.SetBit(0, 0, false)
     mask.SetBit(2, 2, false)
     mask.SetBit(4, 4, false)
 
-    grid := grid.NewMaskedGrid(mask)
+    grid := models.NewMaskedGrid(mask)
     generator.RecursiveBacktracker(grid)
 
     fmt.Println(grid.ToString())

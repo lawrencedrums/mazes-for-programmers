@@ -3,11 +3,11 @@ package generator
 import (
     "math/rand"
 
-    "mazes/grid"
-    c "mazes/grid/cell"
+    "mazes/models"
+    c "mazes/models/cell"
 )
 
-func HuntAndKill(grid grid.Grider) {
+func HuntAndKill(grid models.Grider) {
     current := grid.RandomCell()
 
     for current != nil {

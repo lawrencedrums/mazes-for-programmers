@@ -4,11 +4,11 @@ import (
     "fmt"
 
 	"mazes/generator"
-	"mazes/grid"
+	"mazes/models"
 )
 
 func main() {
-    grid := grid.NewGrid(8, 8)
+    grid := models.NewGrid(8, 8)
 
     grid.Cell(0, 0).East().SetWest(nil)
     grid.Cell(0, 0).South().SetNorth(nil)
