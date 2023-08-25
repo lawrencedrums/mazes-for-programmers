@@ -1,3 +1,4 @@
 *.png
+!mask.png
 
 *.DS_Store

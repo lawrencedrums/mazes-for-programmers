@@ -1,9 +1,11 @@
 package grid
 
 import (
-    "bufio"
-    "math/rand"
-    "os"
+	"bufio"
+	"image"
+	"image/color"
+	"math/rand"
+	"os"
 )
 
 type Mask struct {
@@ -80,4 +82,32 @@ func readlines(filename string) (lines []string) {
         lines = append(lines, scanner.Text())
     }
     return lines
+}
+
+func MaskFromPng(filename string) *Mask {
+    f, err := os.Open(filename)
+    if err != nil {
+        panic(err)
+    }
+
+    img, _, err := image.Decode(f)
+    if err != nil {
+        panic(err)
+    }
+    defer f.Close()
+
+    bounds := img.Bounds()
+    mask := NewMask(bounds.Max.X, bounds.Max.Y)
+
+    for row := 0; row < mask.rows; row++ {
+        for col := 0; col < mask.cols; col++ {
+            black := color.RGBA{0, 0, 0, 255}
+            if img.At(row, col) == black {
+                mask.bits[row][col] = false
+            } else {
+                mask.bits[row][col] = true
+            }
+        }
+    }
+    return mask
 }

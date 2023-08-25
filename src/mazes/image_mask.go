@@ -6,10 +6,10 @@ import (
 )
 
 func main() {
-    mask := grid.MaskFromTxt("masks/mask.txt")
+    mask := grid.MaskFromPng("masks/mask.png")
     grid := grid.NewMaskedGrid(mask)
 
     generator.RecursiveBacktracker(grid)
 
-    grid.ToPng("png/ascii_mask.png", 60, false)
+    grid.ToPng("png/image_mask.png", 60, false)
 }
