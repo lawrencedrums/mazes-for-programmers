@@ -171,27 +171,33 @@ func (g *Grid) ToPng(filename string, cellSize int, background bool) {
 
     backgroundClr := color.RGBA{255, 255, 255, 255}
     wallsClr := color.RGBA{0, 0, 0, 255}
-    wallsWidth := 6
 
-    imgWidth := g.cols * cellSize + wallsWidth
-    imgHeight := g.rows * cellSize + wallsWidth
+    margin := 10
+    imgWidth := g.cols * cellSize + margin
+    imgHeight := g.rows * cellSize + margin
     img := image.NewRGBA(image.Rect(0, 0, imgWidth, imgHeight))
 
     draw.Draw(img, img.Bounds(), &image.Uniform{backgroundClr}, image.ZP, draw.Src)
 
-    drawMaze:
+    if background {
+        for cell := range g.Cells() {
+            cellRow, cellCol := cell.Row(), cell.Col()
+            x0 := cellCol * cellSize
+            y0 := cellRow * cellSize
+            x1 := (cellCol + 1) * cellSize
+            y1 := (cellRow + 1) * cellSize
+
+            cellBackgroundClr := g.backgroundColorFor(cell)
+            drawRect(img, x0, y0, x1, y1, cellBackgroundClr)
+        }
+    }
+
     for cell := range g.Cells() {
         cellRow, cellCol := cell.Row(), cell.Col()
         x0 := cellCol * cellSize
         y0 := cellRow * cellSize
         x1 := (cellCol + 1) * cellSize
         y1 := (cellRow + 1) * cellSize
-
-        if background {
-            cellBackgroundClr := g.backgroundColorFor(cell)
-            drawRect(img, x0, y0, x1, y1, cellBackgroundClr)
-            continue
-        }
 
         if cell.North() == nil {
             drawRect(img, x0, y0, x1, y0, wallsClr)
@@ -207,19 +213,13 @@ func (g *Grid) ToPng(filename string, cellSize int, background bool) {
         }
     }
 
-    if background {
-        background = false
-        goto drawMaze
-    }
-
     if err = png.Encode(f, img); err != nil {
         fmt.Printf("Failed to encode: %v", err)
     }
 }
 
 func drawRect(img draw.Image, x0, y0, x1, y1 int, clr color.Color) {
-    width := 6
-    rect := image.Rect(x0, y0, x1+width, y1+width)
+    rect := image.Rect(x0, y0, x1, y1)
     draw.Draw(img, rect, &image.Uniform{clr}, image.ZP, draw.Src)
 }
 
