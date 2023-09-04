@@ -11,6 +11,7 @@ import (
 	"strings"
 
     c "mazes/models/cell"
+    d "mazes/draw"
 )
 
 type Grider interface {
@@ -188,7 +189,7 @@ func (g *Grid) ToPng(filename string, cellSize int, background bool) {
             y1 := (cellRow + 1) * cellSize
 
             cellBackgroundClr := g.backgroundColorFor(cell)
-            drawRect(img, x0, y0, x1, y1, cellBackgroundClr)
+            d.DrawRect(img, x0, y0, x1, y1, cellBackgroundClr)
         }
     }
 
@@ -200,27 +201,22 @@ func (g *Grid) ToPng(filename string, cellSize int, background bool) {
         y1 := (cellRow + 1) * cellSize
 
         if cell.North() == nil {
-            drawRect(img, x0, y0, x1, y0, wallsClr)
+            d.DrawRect(img, x0, y0, x1, y0, wallsClr)
         }
         if cell.West() == nil {
-            drawRect(img, x0, y0, x0, y1, wallsClr)
+            d.DrawRect(img, x0, y0, x0, y1, wallsClr)
         }
         if !cell.Linked(cell.East()) {
-            drawRect(img, x1, y0, x1, y1, wallsClr)
+            d.DrawRect(img, x1, y0, x1, y1, wallsClr)
         }
         if !cell.Linked(cell.South()) {
-            drawRect(img, x0, y1, x1, y1, wallsClr)
+            d.DrawRect(img, x0, y1, x1, y1, wallsClr)
         }
     }
 
     if err = png.Encode(f, img); err != nil {
         fmt.Printf("Failed to encode: %v", err)
     }
-}
-
-func drawRect(img draw.Image, x0, y0, x1, y1 int, clr color.Color) {
-    rect := image.Rect(x0, y0, x1, y1)
-    draw.Draw(img, rect, &image.Uniform{clr}, image.ZP, draw.Src)
 }
 
 func (g *Grid) prepareGrid() {
